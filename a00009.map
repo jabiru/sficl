@@ -1,0 +1,4 @@
+<map id="SfiDelimitedRecordSTD" name="SfiDelimitedRecordSTD">
+<area shape="rect" id="node4" href="$a00002.html" title="SfiVectorLite\&lt; int \&gt;" alt="" coords="168,184,303,211"/>
+<area shape="rect" id="node7" href="$a00002.html" title="A light version of std::vector that allows push_back and clear without unnecessary memory operations..." alt="" coords="172,95,299,121"/>
+</map>
