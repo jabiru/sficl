@@ -148,7 +148,6 @@ public:
       }
       // The code here is identical with that in split() except here we
       // operate on a char* buffer, and split() operates on a std::string.
-      // TODO: put this in a templated method
       m_sptr = buf;
       int start = 0;
       int i;
