@@ -39,8 +39,16 @@
 //
 //------------------------------------------------------------------------------
 /// A record consisting of string fields separated by a delimiter. The functionality
-/// is similar to the split() function in Perl or the way awk treats lines. Initialize
-/// the class with a string and access the fields by the operator[].
+/// is similar to the split() function in Perl or the way awk treats lines.
+
+/// There are two ways of using this class. The first makes a copy of the string.
+/// In this case, the class should be initialized with a string and the
+/// resulting fields should be accessed by the \c operator[]. The second way is to
+/// pass the line to the class as a writable buffer in the \c split function and
+/// access the resulting fields via the \c get() method. In this case, the split
+/// occurs in-place, i.e., without a copy or memory allocation, but the delimiters
+/// in the buffer are overwritten with null characters. The \c get() method
+/// should not be called after the buffer was subsequently changed by the caller.
 class SfiDelimitedRecordSTD
 {
 protected:
@@ -76,7 +84,8 @@ public:
       return *this;
    }
 
-   /// Sets the record to a new string.
+   /// Sets the record to a new string (makes a copy).
+   /// Access to the resulting split string is via the \c operator[].
    SfiDelimitedRecordSTD& operator=(const char* str)
    {
       if (str)
@@ -97,7 +106,7 @@ public:
       return m_offsets.size();
    }
 
-   /// Returns the i-th field or an empty string if there are fewer than i fields.
+   /// Returns a pointer to the i-th field or an empty string if there are fewer than i fields.
    const char* operator[](int i) const
    {
       int size = m_offsets.size();
@@ -126,9 +135,9 @@ public:
       return n < m_offsets.size() ? m_offsets[n] : -1;
    }
 
+   /// Splits the \c buf in-place, overwriting delimiters with null characters.
    /// Returns the number of fields in the \c buf. Delimiters inside double quotes are ignored.
    /// \c n is the size of string in \c buf, excluding the terminating null.
-   /// NOTE that buf's delimiters get overwritten with null characters.
    /// Access to fields is provided by \c get(int).
    int split(char* buf, int n)
    {
@@ -137,6 +146,8 @@ public:
          clear();
          return 0;
       }
+      // The code here is identical with that in split() except here we
+      // operate on a char* buffer, and split() operates on a std::string.
       m_sptr = buf;
       int start = 0;
       int i;
@@ -163,7 +174,7 @@ public:
    }
 
    /// Returns a pointer to the i-th field of a split string - for use with split(char*, int) only!!!
-   /// If the index i is outside the range of valid fields, a pointer to a null character is returned.
+   /// If the index i is outside the range of valid fields, a pointer to an empty string is returned.
    const char* get(int i) const
    {
       int size = m_offsets.size();
